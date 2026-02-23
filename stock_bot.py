@@ -1,7 +1,7 @@
-# stock_bot_direct.py
+# stock_bot_ready.py
 import requests
 
-# ===== ここにあなたのキーを貼り付ける =====
+# ===== 直接貼り付け =====
 API_KEY = "RB_NnjfS0OpIGn5uC6fac9FEgLFZzBKhYjM0_YkkIVQ"
 LINE_ACCESS_TOKEN = "4XjMJXwNI8Xm669/RNs69/KICRe9jaG8KmUvMPzsye5969fX61beEK6RUbdKlBuiHSRo/xmiamKxclLylysLY9vjFpPslwKwnyIgKc1s50X/RuK3Plc3/Gc8t2BKK9IIfra1BO9cAIT0/jqKdvUC7gdB04t89/1O/w1cDnyilFU="
 LINE_USER_ID = "U3900fb6357ff8ba7767f6f808f85e14a"
@@ -12,10 +12,11 @@ print("LINEトークン:", LINE_ACCESS_TOKEN[:10] + "...")
 print("LINEユーザーID:", LINE_USER_ID)
 
 # ===== 株価取得 =====
+print("=== J-Quants株価取得開始 ===")
 headers = {"x-api-key": API_KEY}
 response = requests.get(
     "https://api.jquants.com/v1/prices/daily_quotes",
-    params={"code": "72030"},  # トヨタ
+    params={"code": "7203"},  # トヨタの銘柄コード
     headers=headers
 )
 
@@ -40,6 +41,7 @@ message = f"""📈 トヨタ株価（{date}）
 print("株価取得成功:\n", message)
 
 # ===== LINE送信 =====
+print("=== LINE送信開始 ===")
 line_url = "https://api.line.me/v2/bot/message/push"
 headers = {
     "Content-Type": "application/json",
