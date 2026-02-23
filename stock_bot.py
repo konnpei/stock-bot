@@ -8,11 +8,15 @@ LINE_USER_ID = os.getenv("LINE_USER_ID")
 
 print("=== 環境変数確認 ===")
 print("RB_NnjfS0OpIGn5uC6fac9FEgLFZzBKhYjM0_YkkIVQ", (API_KEY[:10] + "...") if API_KEY else "なし")
-print(""4XjMJXwNI8Xm669/RNs69/KICRe9jaG8KmUvMPzsye5969fX61beEK6RUbdKlBuiHSRo/xmiamKxclLylysLY9vjFpPslwKwnyIgKc1s50X/RuK3Plc3/Gc8t2BKK9IIfra1BO9cAIT0/jqKdvUC7gdB04t89/1O/w1cDnyilFU=", (LINE_ACCESS_TOKEN[:10] + "...") if LINE_ACCESS_TOKEN else "なし")
-print(""U3900fb6357ff8ba7767f6f808f85e14a", LINE_USER_ID if LINE_USER_ID else "なし")
+print("4XjMJXwNI8Xm669/RNs69/KICRe9jaG8KmUvMPzsye5969fX61beEK6RUbdKlBuiHSRo/xmiamKxclLylysLY9vjFpPslwKwnyIgKc1s50X/RuK3Plc3/Gc8t2BKK9IIfra1BO9cAIT0/jqKdvUC7gdB04t89/1O/w1cDnyilFU=", (LINE_ACCESS_TOKEN[:10] + "...") if LINE_ACCESS_TOKEN else "なし")
+print("U3900fb6357ff8ba7767f6f808f85e14a", LINE_USER_ID if LINE_USER_ID else "なし")
 
 # ===== J-Quantsから株価取得 =====
 print("\n=== J-Quants株価取得開始 ===")
+if not API_KEY:
+    print("⚠️ J-Quants APIキーが設定されていません")
+    exit()
+
 headers = {"x-api-key": API_KEY}
 response = requests.get(
     "https://api.jquants.com/v1/prices/daily_quotes",
@@ -32,7 +36,6 @@ if response.status_code != 200:
     exit()
 
 quote = data["data"][0]
-
 date = quote["Date"]
 open_price = quote["O"]
 high_price = quote["H"]
@@ -50,8 +53,11 @@ print("株価取得成功:\n", message)
 
 # ===== LINE送信 =====
 print("\n=== LINE送信開始 ===")
-line_url = "https://api.line.me/v2/bot/message/push"
+if not LINE_ACCESS_TOKEN or not LINE_USER_ID:
+    print("⚠️ LINEトークンまたはユーザーIDが設定されていません")
+    exit()
 
+line_url = "https://api.line.me/v2/bot/message/push"
 headers = {
     "Content-Type": "application/json",
     "Authorization": f"Bearer {LINE_ACCESS_TOKEN}"
