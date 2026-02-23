@@ -1,35 +1,37 @@
-# stock_bot.py
-
 import requests
 import os
-from dotenv import load_dotenv
 
 # ===== 環境変数読み込み =====
-load_dotenv()  # .env の内容を反映
+API_KEY = os.getenv("JQUANTS_API_KEY")
+LINE_ACCESS_TOKEN = os.getenv("LINE_ACCESS_TOKEN")
+LINE_USER_ID = os.getenv("LINE_USER_ID")
 
-API_KEY = "RB_NnjfS0OpIGn5uC6fac9FEgLFZzBKhYjM0_YkkIVQ"
-LINE_ACCESS_TOKEN = "4XjMJXwNI8Xm669/RNs69/KICRe9jaG8KmUvMPzsye5969fX61beEK6RUbdKlBuiHSRo/xmiamKxclLylysLY9vjFpPslwKwnyIgKc1s50X/RuK3Plc3/Gc8t2BKK9IIfra1BO9cAIT0/jqKdvUC7gdB04t89/1O/w1cDnyilFU="
-LINE_USER_ID = "U3900fb6357ff8ba7767f6f808f85e14a"
-
-# ===== APIキー未設定チェック =====
-if not all([API_KEY, LINE_ACCESS_TOKEN, LINE_USER_ID]):
-    print("⚠️ APIキーが設定されていません。.envを確認してください。")
-    exit()
+print("=== 環境変数確認 ===")
+print("RB_NnjfS0OpIGn5uC6fac9FEgLFZzBKhYjM0_YkkIVQ", API_KEY[:10], "..." if API_KEY else "なし")
+print("4XjMJXwNI8Xm669/RNs69/KICRe9jaG8KmUvMPzsye5969fX61beEK6RUbdKlBuiHSRo/xmiamKxclLylysLY9vjFpPslwKwnyIgKc1s50X/RuK3Plc3/Gc8t2BKK9IIfra1BO9cAIT0/jqKdvUC7gdB04t89/1O/w1cDnyilFU=", LINE_ACCESS_TOKEN[:10], "..." if LINE_ACCESS_TOKEN else "なし")
+print("U3900fb6357ff8ba7767f6f808f85e14a", LINE_USER_ID)
 
 # ===== J-Quantsから株価取得 =====
+print("\n=== J-Quants株価取得開始 ===")
 headers = {"x-api-key": API_KEY}
-
 response = requests.get(
     "https://api.jquants.com/v1/prices/daily_quotes",
-    params={"code": "7203"},  # トヨタの銘柄コード
+    params={"code": "72030"},
     headers=headers
 )
 
-if response.status_code != 200:
-    print("取得エラー:", response.json())
+print("HTTPステータスコード:", response.status_code)
+try:
+    data = response.json()
+except Exception as e:
+    print("JSON変換エラー:", e)
     exit()
 
-quote = response.json()["data"][0]
+if response.status_code != 200:
+    print("取得エラー:", data)
+    exit()
+
+quote = data["data"][0]
 
 date = quote["Date"]
 open_price = quote["O"]
@@ -44,7 +46,10 @@ message = f"""📈 トヨタ株価（{date}）
 終値: {close_price}
 """
 
-# ===== LINEへ送信 =====
+print("株価取得成功:\n", message)
+
+# ===== LINE送信 =====
+print("\n=== LINE送信開始 ===")
 line_url = "https://api.line.me/v2/bot/message/push"
 
 headers = {
@@ -58,8 +63,8 @@ payload = {
 }
 
 line_response = requests.post(line_url, headers=headers, json=payload)
-
-if line_response.status_code == 200:
-    print("✅ LINE送信成功")
+print("LINE送信ステータスコード:", line_response.status_code)
+if line_response.status_code != 200:
+    print("LINE送信エラー:", line_response.text)
 else:
-    print("❌ LINE送信失敗:", line_response.status_code, line_response.text)
+    print("LINE送信成功 ✅")
