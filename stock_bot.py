@@ -1,4 +1,4 @@
-# stock_bot.py - 完全版
+# stock_bot.py - 環境変数チェック＋株価取得＋LINE送信 完全版
 import requests
 import os
 from dotenv import load_dotenv
@@ -12,9 +12,9 @@ LINE_USER_ID = os.getenv("LINE_USER_ID")
 
 # ===== 環境変数確認 =====
 print("=== 環境変数確認 ===")
-print("B_NnjfS0OpIGn5uC6fac9FEgLFZzBKhYjM0_YkkIVQ", (API_KEY[:10] + "...") if API_KEY else "なし")
-print("4XjMJXwNI8Xm669/RNs69/KICRe9jaG8KmUvMPzsye5969fX61beEK6RUbdKlBuiHSRo/xmiamKxclLylysLY9vjFpPslwKwnyIgKc1s50X/RuK3Plc3/Gc8t2BKK9IIfra1BO9cAIT0/jqKdvUC7gdB04t89/1O/w1cDnyilFU=", (LINE_ACCESS_TOKEN[:10] + "...") if LINE_ACCESS_TOKEN else "なし")
-print("U3900fb6357ff8ba7767f6f808f85e14a", LINE_USER_ID if LINE_USER_ID else "なし")
+print("J-Quants APIキー:", (API_KEY[:10] + "...") if API_KEY else "なし")
+print("LINEトークン:", (LINE_ACCESS_TOKEN[:10] + "...") if LINE_ACCESS_TOKEN else "なし")
+print("LINEユーザーID:", LINE_USER_ID if LINE_USER_ID else "なし")
 
 # ===== J-Quants 株価取得 =====
 print("\n=== J-Quants株価取得開始 ===")
@@ -25,7 +25,7 @@ if not API_KEY:
 headers = {"x-api-key": API_KEY}
 response = requests.get(
     "https://api.jquants.com/v1/prices/daily_quotes",
-    params={"code": "72030"},  # トヨタの銘柄コード
+    params={"code": "72030"},  # トヨタ
     headers=headers
 )
 
